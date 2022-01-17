@@ -1,22 +1,22 @@
 const router = require("express").Router();
 const md = require("./accounts-middleware");
 
-router.get("/", (req, res, next) => {
+const Account = require("./accounts-model");
+
+router.get("/", async (req, res, next) => {
   // DO YOUR MAGIC
   try {
+    const accounts = await Account.getAll();
+    res.json(accounts);
     res.json("get accounts");
   } catch (err) {
     next({ status: 422, message: "this is horrible" });
   }
 });
 
-router.get("/:id", md.checkAccountID, (req, res, next) => {
-  // DO YOUR MAGIC
-  try {
-    res.json("get account by id");
-  } catch (err) {
-    next(err);
-  }
+router.get("/:id", md.checkAccountID, async (req, res, next) => {
+  res.json(req.account);
+  next();
 });
 
 router.post(
@@ -24,7 +24,6 @@ router.post(
   md.checkAccountPayload,
   md.checkAccountNameUnique,
   (req, res, next) => {
-    // DO YOUR MAGIC
     try {
       res.json("post account");
     } catch (err) {
